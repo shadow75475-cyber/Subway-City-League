@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#0B0F16"><title>SCL-I — Subway City League Season I</title>
+<style>
+:root{--bg:#0B0F16;--card:#141B27;--card2:#1C2535;--line:#27324A;--txt:#E8EEF8;--ink:#E8EEF8;--on:#12161C;--muted:#8E9BB5;--acc:#FFC400;--danger:#FF5C7A;--dpd:#3B82F6;--utv:#2ED47F;--nds:#FF8A3D;--dpd-t:#7DB2FF;--utv-t:#4ADE9B;--nds-t:#FFA25E;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;} h1,h2,h3{margin:0;}
+body{background:var(--bg);color:var(--txt);font:16px/1.4 "Helvetica Neue",Helvetica,Arial,sans-serif;padding-bottom:calc(88px + env(safe-area-inset-bottom));}
+button,input,select{font-family:inherit;font-size:16px;}
+.t-DPD{color:var(--dpd-t);} .t-UTV{color:var(--utv-t);} .t-NDS{color:var(--nds-t);}
+.top{position:sticky;top:0;z-index:50;background:#0A0E15;color:#fff;border-bottom:1px solid var(--line);padding:calc(11px + env(safe-area-inset-top)) 16px 11px;display:flex;align-items:center;justify-content:space-between;}
+.top b{font-size:21px;font-weight:900;letter-spacing:-.4px;} .top div>span:not(.blt){font-size:12.5px;color:#aab3c0;margin-left:10px;font-weight:600;}
+.top .bl{display:flex;gap:6px;} .top .blt{font-size:17px;}
+.stripe{position:sticky;top:calc(48px + env(safe-area-inset-top));z-index:49;height:5px;background:linear-gradient(90deg,var(--dpd) 33.3%,var(--utv) 33.3% 66.6%,var(--nds) 66.6%);}
+main{max-width:720px;margin:0 auto;padding:18px 14px;}
+.view{display:none;} .view.active{display:block;animation:fade .2s ease;}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.h{font-size:28px;font-weight:900;letter-spacing:-.8px;margin:2px 2px 14px;}
+.sub{font-size:13px;font-weight:800;color:var(--muted);margin:24px 2px 10px;}
+.note{font-size:12.5px;color:var(--muted);margin:10px 2px;}
+.blt{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:26px;padding:0 8px;border-radius:999px;font-weight:900;font-size:11px;letter-spacing:.3px;color:#fff;flex:none;}
+.blt.lg{font-size:30px;line-height:1.3;}
+.b-DPD{background:var(--dpd);} .b-UTV{background:var(--utv);color:#04200f;} .b-NDS{background:var(--nds);color:#1b0d00;} .b-x{background:#3A465C;}
+.hero{background:linear-gradient(160deg,#1C2740,#111826);border:1px solid var(--line);color:#fff;border-radius:24px;padding:24px 18px 18px;}
+.hero h1{font-size:68px;font-weight:900;letter-spacing:-3.5px;line-height:.9;}
+.hero p{margin:10px 0 0;color:#aab3c0;font-size:15px;font-weight:600;}
+.champ{display:flex;align-items:center;gap:14px;margin-top:20px;background:var(--acc);color:var(--on);border-radius:18px;padding:12px 14px;}
+.champ small{display:block;font-size:12.5px;font-weight:800;opacity:.75;} .champ b{font-size:20px;font-weight:900;letter-spacing:-.3px;}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px;}
+.kpi{background:var(--card);border-radius:18px;padding:13px 6px;text-align:center;} .kpi b{display:block;font-size:28px;font-weight:900;letter-spacing:-1px;} .kpi small{font-size:11.5px;color:var(--muted);font-weight:700;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;margin-bottom:12px;} .card.flush{padding:0;overflow:hidden;}
+.empty{background:var(--card);border:2px dashed var(--line);border-radius:18px;padding:20px;text-align:center;color:var(--muted);font-size:14px;}
+.srow{display:grid;grid-template-columns:20px 28px 1fr auto;gap:12px;align-items:center;padding:14px;border-top:1px solid var(--line);} .srow.first{border-top:0;background:linear-gradient(90deg,rgba(255,196,0,.16),transparent);}
+.pos{font-weight:900;color:var(--muted);} .sn{font-weight:800;} .sd{font-size:12.5px;color:var(--muted);font-weight:600;}
+.smp{font-size:28px;font-weight:900;text-align:right;line-height:1;letter-spacing:-1px;} .smp small{display:block;font-size:10.5px;color:var(--muted);font-weight:700;letter-spacing:0;margin-top:3px;}
+.route{position:relative;padding-left:28px;} .route:before{content:"";position:absolute;left:9px;top:8px;bottom:8px;width:6px;border-radius:3px;background:#4A5873;}
+.stage{display:inline-block;margin:4px 0 12px -28px;background:var(--ink);color:var(--on);font-weight:800;font-size:13px;padding:7px 14px;border-radius:999px;}
+.stn{position:relative;margin-bottom:14px;} .dot{position:absolute;left:-28px;top:20px;width:24px;height:24px;border-radius:50%;background:var(--bg);border:6px solid #4A5873;} .stn.done .dot{background:var(--acc);}
+.mc{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;margin-bottom:12px;} .stn .mc{margin:0;}
+.mt{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);font-weight:700;}
+.bdg{font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;background:var(--card2);color:var(--muted);} .bdg.done{background:var(--acc);color:var(--on);}
+.vsr{display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:8px;margin:14px 0 4px;}
+.tm{display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:800;font-size:14px;text-align:center;line-height:1.2;}
+.sc{font-size:36px;font-weight:900;letter-spacing:-1.5px;font-variant-numeric:tabular-nums;} .vsx{font-size:14px;font-weight:800;color:var(--muted);}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;padding:10px 14px;border-radius:14px;border:2px solid #3A465C;background:var(--card2);color:var(--txt);font-weight:800;cursor:pointer;}
+.btn:active{transform:scale(.985);} .btn.primary{background:var(--acc);border-color:var(--acc);color:var(--on);} .btn.ghost{background:transparent;border-color:var(--line);} .btn.small{min-height:42px;font-size:14px;width:auto;flex:1;}
+.ra{display:flex;gap:8px;margin-top:14px;}
+.detail{display:none;margin-top:12px;padding-top:12px;border-top:2px dashed var(--line);} .detail.open{display:block;}
+.run-detail{background:var(--card2);border-radius:14px;padding:10px;margin-bottom:8px;}
+.rd-head{display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:var(--muted);margin-bottom:6px;}
+.rd-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:7px 8px;border-radius:10px;font-size:14.5px;} .rd-row.won{background:var(--card);outline:2px solid var(--acc);}
+.rd-team{font-weight:800;font-size:13px;white-space:nowrap;} .rd-surfer{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;} .rd-score{font-weight:900;font-variant-numeric:tabular-nums;}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:80;display:grid;grid-template-columns:repeat(5,1fr);background:#0E131D;border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
+.tab{background:none;border:0;color:var(--muted);font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:3px;padding:2px 0;cursor:pointer;}
+.ti{width:52px;height:30px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:19px;} .tab.active{color:var(--ink);} .tab.active .ti{background:var(--acc);}
+.rec-pills{display:flex;gap:8px;overflow-x:auto;margin:0 -14px 14px;padding:2px 14px 4px;scrollbar-width:none;} .rec-pills::-webkit-scrollbar{display:none;}
+.pill{flex:0 0 auto;min-height:42px;padding:0 16px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--muted);font-size:14px;font-weight:800;cursor:pointer;} .pill.active{background:var(--acc);border-color:var(--acc);color:var(--on);}
+.rec-pane{display:none;} .rec-pane.active{display:block;animation:fade .2s ease;}
+.potm{text-align:center;padding:22px 14px 16px;border-radius:24px;background:var(--acc);color:var(--on);}
+.potm-kicker{font-size:13px;font-weight:800;} .potm-emoji{font-size:58px;line-height:1.15;margin-top:6px;} .potm-name{font-size:32px;font-weight:900;letter-spacing:-1px;} .potm-sub{font-size:14px;font-weight:800;margin-top:2px;}
+.potm .chip-stats{display:grid;grid-template-columns:1fr 1fr;margin:16px 0 0;} .potm .chip-stat{background:rgba(255,255,255,.55);} .potm .chip-stat-lbl{color:#5a4600;}
+.xi{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.xi-p{position:relative;background:var(--card);border:1px solid var(--line);border-top:5px solid var(--line);border-radius:18px;padding:16px 10px 12px;text-align:center;}
+.xi-p.DPD{border-top-color:var(--dpd);} .xi-p.UTV{border-top-color:var(--utv);} .xi-p.NDS{border-top-color:var(--nds);}
+.xi-p.res{grid-column:1/-1;display:flex;align-items:center;gap:14px;text-align:left;border-style:dashed;border-top-width:1px;padding:12px 14px;}
+.xi-e{font-size:34px;line-height:1.1;} .xi-n{font-weight:900;font-size:15px;margin-top:3px;} .xi-p.res .xi-n{margin-top:0;} .xi-t{font-size:12px;font-weight:800;margin-top:2px;} .xi-s{font-size:12px;color:var(--muted);margin-top:5px;}
+.cap{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;background:var(--acc);color:var(--on);font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;}
+.card.rec{padding:14px 0 0;overflow:hidden;} .rec h3{font-size:17px;font-weight:900;letter-spacing:-.3px;padding:0 14px;} .rec-sub{font-size:12.5px;color:var(--muted);padding:2px 14px 10px;}
+.rr{display:grid;grid-template-columns:30px 1fr auto;gap:5px 10px;align-items:center;padding:12px 14px;border-top:1px solid var(--line);}
+.rk{width:28px;height:28px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:var(--muted);}
+.rk.r1{background:var(--acc);color:var(--on);} .rk.r2{background:#C9D0DB;color:var(--on);} .rk.r3{background:#E3A877;color:var(--on);}
+.rm{min-width:0;} .rn{font-weight:800;font-size:15px;display:flex;flex-wrap:wrap;gap:2px 8px;align-items:center;} .rt{font-size:12px;font-weight:800;} .rs{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.35;}
+.rv{font-weight:900;font-size:17px;letter-spacing:-.3px;font-variant-numeric:tabular-nums;text-align:right;} .rv small{display:block;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0;}
+.bar{grid-column:2/-1;height:5px;border-radius:5px;background:var(--card2);overflow:hidden;} .bar i{display:block;height:100%;border-radius:5px;background:var(--c,var(--acc));}
+.club{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 14px;} .club-i{background:var(--card2);border-radius:14px;padding:12px 8px;text-align:center;}
+.fin{font-size:13px;font-weight:800;min-height:18px;margin:2px 0;} .tp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;} .tp .chip-stat{padding:9px 4px;}
+.team-card{background:var(--card);border:1px solid var(--line);border-top:6px solid var(--line);border-radius:20px;padding:15px;margin-bottom:14px;}
+.team-card.DPD{border-top-color:var(--dpd);} .team-card.UTV{border-top-color:var(--utv);} .team-card.NDS{border-top-color:var(--nds);}
+.team-head{display:flex;align-items:center;gap:10px;} .team-emoji{font-size:26px;} .team-name{font-size:19px;font-weight:900;letter-spacing:-.4px;}
+.team-code{font-size:12px;color:var(--muted);font-weight:800;margin:2px 0 4px;} .sub-head{font-size:13px;font-weight:800;color:var(--muted);margin:14px 0 8px;}
+.chip-list{display:flex;flex-wrap:wrap;gap:8px;}
+.chip-item{flex:0 0 auto;background:var(--card2);border-left:4px solid var(--line);border-radius:12px;max-width:100%;overflow:hidden;}
+.team-card.DPD .chip-item{border-left-color:var(--dpd);} .team-card.UTV .chip-item{border-left-color:var(--utv);} .team-card.NDS .chip-item{border-left-color:var(--nds);}
+.chip-item.expanded{flex:1 1 100%;background:var(--card);outline:2px solid var(--acc);}
+.chip-head{display:flex;align-items:center;gap:6px;width:100%;padding:10px 12px;background:transparent;border:0;color:var(--txt);font-size:14px;font-weight:700;text-align:left;cursor:pointer;white-space:nowrap;} .chip-item.expanded .chip-head{white-space:normal;border-bottom:1px solid var(--line);}
+.chip-lvl{color:var(--muted);font-size:12px;font-weight:800;margin-left:3px;} .chip-body{display:none;padding:12px 14px 14px;} .chip-item.expanded .chip-body{display:block;}
+.chip-stats{display:flex;gap:8px;margin-bottom:12px;} .chip-stat{flex:1;background:var(--card2);border-radius:10px;padding:8px 6px;text-align:center;}
+.chip-stat-lbl{font-size:10px;color:var(--muted);font-weight:800;} .chip-stat-val{font-size:15px;font-weight:900;margin-top:3px;font-variant-numeric:tabular-nums;}
+.perks-title{font-size:12px;font-weight:800;color:var(--muted);margin-bottom:8px;} .perk{background:var(--card2);border-radius:12px;padding:10px 12px;margin-bottom:8px;}
+.perk-head{display:flex;gap:7px;align-items:center;font-size:13px;font-weight:800;} .perk-name{text-transform:uppercase;letter-spacing:.2px;} .perk-desc{font-size:13px;color:var(--muted);margin-top:5px;}
+.perk-stat{display:flex;justify-content:space-between;gap:10px;margin-top:9px;padding-top:9px;border-top:2px dashed var(--line);font-size:12.5px;} .perk-stat-label{color:var(--muted);font-weight:600;} .perk-stat-value{font-weight:900;}
+.entry-overlay{position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;}
+.entry-overlay.open{display:block;}
+.entry-panel{max-width:760px;margin:0 auto;padding:0 14px calc(28px + env(safe-area-inset-bottom));}
+.entry-head{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;background:rgba(10,14,23,.96);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:14px 0;padding-top:calc(14px + env(safe-area-inset-top));margin-bottom:14px;}
+.entry-date{font-size:12.5px;color:var(--muted);font-weight:700;letter-spacing:.5px;}
+.entry-title{font-size:20px;font-weight:800;margin-top:4px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.icon-btn{width:44px;height:44px;flex:0 0 44px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--txt);font-size:19px;cursor:pointer;}
+.run-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:14px;}
+.run-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.run-title{font-size:14px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.run-winner{font-size:13px;font-weight:800;} .run-winner.tie{color:var(--danger);}
+.run-side{margin-top:10px;padding:11px;border-radius:13px;background:var(--card2);border:1px solid var(--line);border-left:4px solid var(--line);}
+.run-side.home{border-left-color:#4cc9f0;} .run-side.away{border-left-color:#ff8a3d;}
+.side-label{font-size:13px;font-weight:800;margin-bottom:9px;letter-spacing:.4px;}
+.fields{display:grid;grid-template-columns:1fr 104px;gap:8px;}
+select.surfer-select,input.score-input{width:100%;min-height:50px;border-radius:12px;border:1px solid var(--line);background:#0f1626;color:var(--txt);padding:10px 11px;font-size:15.5px;outline:none;}
+select.surfer-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%238b98b8' stroke-width='2' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+select.surfer-select option:disabled{color:#4d5772;}
+input.score-input{text-align:center;font-weight:800;font-variant-numeric:tabular-nums;}
+input.score-input:focus,select.surfer-select:focus{border-color:var(--acc);}
+input.score-input::-webkit-outer-spin-button,input.score-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+input.score-input[type=number]{-moz-appearance:textfield;}
+.entry-msg{display:none;border-radius:13px;padding:12px 14px;font-size:14px;font-weight:600;margin-bottom:12px;}
+.entry-msg.show{display:block;}
+.entry-msg.error{background:rgba(255,92,122,.13);border:1px solid rgba(255,92,122,.45);color:#ff9db1;}
+.entry-msg.info{background:rgba(61,220,151,.12);border:1px solid rgba(61,220,151,.4);color:#5fe0ae;}
+.entry-actions{position:sticky;bottom:0;display:flex;flex-direction:column;gap:10px;padding:14px 0 10px;background:linear-gradient(to top,var(--bg) 60%,rgba(10,14,23,0));}
+
+.entry-title .vs,.vs{color:var(--muted);font-size:13px;font-weight:800;}
+.sec-title{font-size:13px;font-weight:800;color:var(--muted);margin:26px 2px 10px;}
+.chip-cap{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--acc);color:var(--on);font-size:10px;font-weight:900;flex:none;}
+.cap-line{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;margin:6px 0 2px;}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:18px;background:var(--card);}
+table.standings{width:100%;border-collapse:collapse;font-size:13.5px;min-width:330px;}
+table.standings th{color:var(--muted);font-weight:700;font-size:11px;letter-spacing:.5px;padding:13px 6px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap;}
+table.standings td{padding:15px 6px;text-align:center;border-bottom:1px solid rgba(39,50,74,.7);font-variant-numeric:tabular-nums;}
+table.standings tr:last-child td{border-bottom:none;}
+table.standings th.tl,table.standings td.tl{text-align:left;padding-left:14px;}
+table.standings td.tl{font-weight:800;white-space:nowrap;} table.standings td.rank{color:var(--muted);font-weight:800;} table.standings td.mp{color:var(--acc);font-weight:900;font-size:15px;}
+table.standings tbody tr:first-child{background:linear-gradient(90deg,rgba(255,196,0,.14),transparent);}
+.vsr .sc,.vsr .vsx{align-self:center;}
+.stage{position:relative;z-index:2;box-shadow:0 0 0 4px var(--bg);}
+.scw{align-self:center;text-align:center;} .sr-tag{font-size:11px;font-weight:800;color:var(--acc);margin-top:2px;}
+.run-card.super{border:2px solid var(--acc);} .sr-note{font-size:12.5px;color:var(--muted);margin:0 0 10px;}
+.run-detail.super{outline:2px solid var(--acc);}
+.orig{text-align:center;padding:20px 14px 16px;border-radius:24px;border:1px solid rgba(255,196,0,.45);background:radial-gradient(circle at 50% -10%,rgba(255,196,0,.28),transparent 62%),linear-gradient(160deg,#1C2740,#111826);}
+.orig-k{font-size:14px;font-weight:900;color:var(--acc);}
+.orig-board{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;margin-top:14px;}
+.orig-e{font-size:36px;line-height:1.2;} .orig-n{font-size:20px;font-weight:900;letter-spacing:-.4px;} .orig-t{font-size:12px;font-weight:800;margin-top:2px;}
+.orig-c{font-size:42px;font-weight:900;letter-spacing:-1.5px;margin-top:6px;line-height:1;} .orig-c small{font-size:20px;margin-left:4px;letter-spacing:0;}
+.orig-vs{font-size:13px;font-weight:800;color:var(--muted);} .orig-l{margin-top:14px;font-size:13.5px;font-weight:800;}
+.orow{padding:12px 14px;border-top:1px solid var(--line);}
+.ocmp{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-top:8px;}
+.ocmp div{text-align:center;font-weight:800;font-size:14px;padding:9px 4px;border-radius:12px;background:var(--card2);}
+.ocmp b{display:block;font-size:16px;font-variant-numeric:tabular-nums;margin-top:2px;} .ocmp .ow{background:var(--acc);color:var(--on);}
+.ovs{color:var(--muted);font-weight:800;font-size:12px;}
+.orig-sub{font-size:13px;color:var(--muted);font-weight:700;margin-top:2px;}
+.holder{margin:16px 0 4px;padding:16px 12px;border-radius:20px;background:var(--acc);color:var(--on);}
+.holder-k{font-size:13px;font-weight:900;} .holder-e{font-size:44px;line-height:1.25;margin-top:4px;} .holder-n{font-size:28px;font-weight:900;letter-spacing:-.8px;line-height:1.1;} .holder-t{font-size:13px;font-weight:800;margin-top:4px;opacity:.85;}
+.orig-w{font-size:11px;color:var(--muted);font-weight:700;margin-top:4px;} .orig-board{margin-top:16px;}
+.owin{font-size:12.5px;font-weight:800;color:var(--muted);margin-top:8px;text-align:center;}
+</style></head><body>
+<header class="top"><div><b>SCL-I</b><span>Subway City League</span></div><div class="bl"><span class="blt">🏞️</span><span class="blt">🐍</span><span class="blt">🌅</span></div></header><div class="stripe"></div>
+<main>
+<section class="view active" id="view-home"><div id="homeBox"></div></section>
+<section class="view" id="view-matches"><h2 class="h">Matches</h2><div id="matchesList"></div></section>
+<section class="view" id="view-table"><h2 class="h">Group standings</h2><div id="tableBox"></div><p class="note">Group stage only (6 matches). Ranked by match points, then run points, then run difference.</p><p class="note">P played · W won · D drawn · L lost · MP match points · RP run points · RD run difference</p></section>
+<section class="view" id="view-records"><h2 class="h">Records &amp; awards</h2>
+<div class="rec-pills"><button class="pill active" data-pane="awards">🏅 Awards</button><button class="pill" data-pane="scores">🔥 Scores</button><button class="pill" data-pane="perf">📊 Performance</button><button class="pill" data-pane="teams">👥 Teams</button><button class="pill" data-pane="rivalry">👑 Rivalry</button></div>
+<div class="rec-pane active" id="pane-awards"></div><div class="rec-pane" id="pane-scores"></div><div class="rec-pane" id="pane-perf"></div><div class="rec-pane" id="pane-teams"></div><div class="rec-pane" id="pane-rivalry"></div></section>
+<section class="view" id="view-teams"><h2 class="h">Teams</h2><p class="note" style="margin-top:-8px">Tap a surfer or board to see its perks.</p><div id="teamsList"></div></section>
+</main>
+<nav class="tabs"><button class="tab active" data-view="home"><span class="ti">🏠</span>Home</button><button class="tab" data-view="matches"><span class="ti">🚇</span>Matches</button><button class="tab" data-view="table"><span class="ti">📊</span>Table</button><button class="tab" data-view="records"><span class="ti">🏆</span>Records</button><button class="tab" data-view="teams"><span class="ti">👥</span>Teams</button></nav>
+<div class="entry-overlay" id="entryOverlay">
+  <div class="entry-panel">
+    <div class="entry-head">
+      <div>
+        <div class="entry-date" id="entryDate"></div>
+        <div class="entry-title" id="entryTitle"></div>
+      </div>
+      <button class="icon-btn" id="entryClose" aria-label="Close">✕</button>
+    </div>
+    <div id="entryRuns"></div>
+    <div class="entry-msg" id="entryMsg"></div>
+    <div class="entry-actions">
+      <button class="btn primary" id="entrySave">💾 Save Result</button>
+      <button class="btn ghost" id="entryCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+<script>
+const TEAMS = {
+  DPD: { id:'DPD', emoji:'🏞️', name:'Delorean Park Drifters', short:'DPD',
+    surfers:[
+      { emoji:'🔵', name:'Jake', lvl:11, multiplier:'6', perks:[
+        { icon:'🧲', title:'MAGNETIC PERSONALITY', desc:'Get a magnet when you activate a board', statLabel:'Magnet duration increase', statValue:'+9s' },
+        { icon:'🛹', title:'WHEELHEAD', desc:'Get board charge by picking up coins', statLabel:'Coins to pick up', statValue:'40' },
+        { icon:'⚡', title:'READY TO GO', desc:'Start runs with a board ready' }]},
+      { emoji:'😷', name:'Miss Maia', lvl:11, multiplier:'6', perks:[
+        { icon:'🪙', title:'GOLDEN PATH', desc:'Get a coin doubler when you activate a board', statLabel:'Coin doubler duration increase', statValue:'+9s' },
+        { icon:'🧲', title:'DOUBLE THE THRILL', desc:'Get a magnet when collecting coins', statLabel:'Coins to pick up', statValue:'150' },
+        { icon:'🛹', title:'TRACEUSE', desc:'Bounce on tarps and bubbles to get coins & charges' }]},
+      { emoji:'🤖', name:'Tagbot', lvl:9, multiplier:'5', perks:[
+        { icon:'🔋', title:'CONVERTER', desc:'Get a battery when collecting coins', statLabel:'Coins to pick up', statValue:'230' },
+        { icon:'🛹', title:'RECURSIVE GENERATOR', desc:'Get board charges while riding a board with a battery', statLabel:'Seconds between charges', statValue:'2.5' },
+        { icon:'🛡️', title:'PROTECTIVE PROTOCOL', desc:'Battery grants a temporary shield' }]},
+      { emoji:'🥊', name:'Noon', lvl:10, multiplier:'5.5', perks:[
+        { icon:'⚡', title:'ADRENALINE BOOST', desc:'Get board charges over time with any active power-up', statLabel:'Time between charges', statValue:'2s' },
+        { icon:'🛹', title:'ENERGETIC TRICKS', desc:'Get 2 board charges by jumping over/sliding under hurdles', statLabel:'Required hurdles', statValue:'3' },
+        { icon:'🪓', title:'AXE KICK', desc:'Get a random power-up when stomping on buried caches' }]},
+      { emoji:'💛', name:'Jay', lvl:9, multiplier:'5', perks:[
+        { icon:'💥', title:'DAREDEVIL', desc:'Get a power-up and bonus score when you crash with a board', statLabel:'Bonus score', statValue:'60' },
+        { icon:'⚡', title:'ENERGY DRINK', desc:'Get extra board charges from buried caches', statLabel:'Extra amount', statValue:'3' },
+        { icon:'🛹', title:'BRASH AND BROKEN', desc:'Board fills and drains faster' }]}
+    ],
+    boards:[
+      { emoji:'⚔️', name:'Wakizashi', lvl:8, multiplier:'1.8', perks:[{ icon:'⚡️', title:'ENERGY SYNERGY', desc:'Get bonus score when picking up board charges while riding this board', statLabel:'Score', statValue:'8' }]},
+      { emoji:'🌍', name:'Globetrotter', lvl:8, multiplier:'1.8', perks:[{ icon:'🌍', title:'TRAVEL PARTNER', desc:'Get coins, or board charges, or a random power-up while riding this board', statLabel:'Meters to ride', statValue:'380' }]},
+      { emoji:'💚', name:'Sub Surf Classic', lvl:12, multiplier:'2.2', perks:[{ icon:'🎯', title:'SCORE ATTACK', desc:'Get bonus score when picking up coins while riding this board', statLabel:'Bonus score', statValue:'7' }]}
+    ]
+  },
+  UTV: { id:'UTV', emoji:'🐍', name:'Undertracks Vipers', short:'UTV',
+    surfers:[
+      { emoji:'🟣', name:'Yutani', lvl:12, multiplier:'6.5', perks:[
+        { icon:'🎁', title:'RESOURCEFUL', desc:'Get random power-ups while running', statLabel:'Meters to run', statValue:'550' },
+        { icon:'🛹', title:'POWERED BACKUPS', desc:'Get an extra board when running with power-ups active', statLabel:'Meters to run', statValue:'500' },
+        { icon:'⚡', title:'ALL JUICED UP', desc:'Power-ups last twice as long' }]},
+      { emoji:'🖤', name:'Lucy', lvl:9, multiplier:'5', perks:[
+        { icon:'🪙', title:'NECOINMANCY', desc:'Get coins over time with an active magnet', statLabel:'Seconds between coins', statValue:'1s' },
+        { icon:'🧲', title:'SPOOKY BLESSING', desc:'Chance of getting a magnet from a coin sack', statLabel:'Chance', statValue:'35%' },
+        { icon:'👻', title:'LOVELY SHADOWS', desc:'Get double the amount of coins from Necoinmancy' }]},
+      { emoji:'🌸', name:'Ella', lvl:8, multiplier:'4.5', perks:[
+        { icon:'💰', title:'BLING BLING', desc:'Get coins when picking up power-ups', statLabel:'Coins', statValue:'7' },
+        { icon:'🎵', title:'IN THE GROOVE', desc:'Get additional multiplier when one power-up is active', statLabel:'Multiplier', statValue:'1' },
+        { icon:'🌟', title:'THE SPOTLIGHT', desc:'Get all power-ups when you pick up a Secret Star' }]},
+      { emoji:'🏴‍☠️', name:'Billy', lvl:10, multiplier:'5.5', perks:[
+        { icon:'💰', title:'MOSHPIT MONSTER', desc:'Get more coins and board charges from buried caches', statLabel:'Chance of a bonus power-up', statValue:'40%' },
+        { icon:'⚡️', title:'ZAPPED', desc:'Get board charge whenever you pick up a power-up', statLabel:'Charges gained', statValue:'3' },
+        { icon:'🎵', title:'DOUBLE BASS', desc:'Get a coin sack whenever you pick up a power-up' }]}
+    ],
+    boards:[
+      { emoji:'👾', name:'Spaced Invader', lvl:7, multiplier:'1.6', perks:[{ icon:'👽', title:'INVADER DROP', desc:'Get a random power-up over time while riding this board', statLabel:'Frequency', statValue:'45s' }]},
+      { emoji:'🎧', name:'The Grandmaster', lvl:8, multiplier:'1.8', perks:[{ icon:'🎵', title:'POWER CHORD', desc:'Activate this board to get bonus score', statLabel:'Bonus score', statValue:'+250' }]},
+      { emoji:'🐆', name:'Pouncer', lvl:6, multiplier:'1.6', perks:[{ icon:'🦘', title:'HURDLE HOPPER', desc:'Get extra coins by jumping over or sliding under hurdles while riding this board', statLabel:'Extra coins', statValue:'6' }]}
+    ]
+  },
+  NDS: { id:'NDS', emoji:'🌅', name:'Neon Dawn – Sunrise BLVD', short:'NDS',
+    surfers:[
+      { emoji:'🥷🏻', name:'Ninja One', lvl:9, multiplier:'5', perks:[
+        { icon:'🎒', title:'UTILITY BAG', desc:'Get a random power-up when you pick up board charges', statLabel:'Board charges needed', statValue:'20' },
+        { icon:'🛹', title:'URBAN NINJA', desc:'Get board charges when you pick up a coin sack', statLabel:'Bonus board charges', statValue:'3' },
+        { icon:'👻', title:'LIKE A GHOST', desc:'Get a board charge when you pick up 5 board charges' }]},
+      { emoji:'⚡️', name:'Spike', lvl:10, multiplier:'5.5', perks:[
+        { icon:'⛓️', title:'CHAIN SPIKE', desc:'Get incremental score when picking up magnets (peaks at 5 magnets)', statLabel:'Score per magnet', statValue:'40' },
+        { icon:'🧲', title:'PUNK CHARM', desc:'Get a magnet when stomping on buried caches', statLabel:'Buried caches to stomp', statValue:'3' },
+        { icon:'🔄', title:'IT IS MINE', desc:'50% chance to get another magnet when one expires' }]},
+      { emoji:'🩷', name:'Tricky', lvl:11, multiplier:'6', perks:[
+        { icon:'💰', title:'STYLE & FLOW', desc:'Get a coin doubler when picking up 200 coins', statLabel:'Doubler duration increase', statValue:'+10s' },
+        { icon:'🫧', title:'TERRE GAME ON POINT', desc:'Get a bubblegum when picking up 300 coins', statLabel:'Bubblegum duration increase', statValue:'+7s' },
+        { icon:'💼', title:'MONEY BAGS', desc:'Get a coin sack when picking up 125 coins' }]},
+      { emoji:'🟤', name:'Fresh', lvl:10, multiplier:'5.5', perks:[
+        { icon:'🛹', title:'CREATURE OF HABIT', desc:'Get board charge over time', statLabel:'Frequency', statValue:'30s' },
+        { icon:'✨', title:'CLEAN RIDER', desc:'Get bonus score multiplier while riding a board', statLabel:'Bonus multiplier', statValue:'+1' },
+        { icon:'⭐', title:'STAR POWER', desc:'Secret Stars are worth double' }]}
+    ],
+    boards:[
+      { emoji:'🍕', name:'Trasher', lvl:7, multiplier:'1.6', perks:[{ icon:'🧲', title:'MAGNETIC BOOST', desc:'Collect magnets while riding this board to get bonus score', statLabel:'Bonus score', statValue:'250' }]},
+      { emoji:'😈', name:'Naughty & Nice', lvl:7, multiplier:'1.6', perks:[{ icon:'💰', title:'CHA-CHING', desc:'Collect coin sacks while riding this board to get extra coins', statLabel:'Extra coins', statValue:'4' }]},
+      { emoji:'🐍', name:'Eye of the Viper', lvl:10, multiplier:'2', perks:[{ icon:'👟', title:'STOMP DROP', desc:'Stomp on buried caches while riding this board to get bonus score', statLabel:'Bonus score', statValue:'400' }]}
+    ]
+  }
+};
+const FIXTURES = [
+  { id:'g1', stage:'Group Stage', date:'10 Oct', home:'DPD', away:'UTV' },
+  { id:'g2', stage:'Group Stage', date:'12 Oct', home:'NDS', away:'DPD' },
+  { id:'g3', stage:'Group Stage', date:'14 Oct', home:'UTV', away:'NDS' },
+  { id:'g4', stage:'Group Stage', date:'16 Oct', home:'UTV', away:'DPD' },
+  { id:'g5', stage:'Group Stage', date:'18 Oct', home:'DPD', away:'NDS' },
+  { id:'g6', stage:'Group Stage', date:'20 Oct', home:'NDS', away:'UTV' },
+  { id:'p1', stage:'Playoffs', kind:'semi',  title:'Eliminator',  date:'22 Oct', home:null, away:null, placeholder:'🥈 2nd vs 🥉 3rd' },
+  { id:'f1', stage:'Playoffs', kind:'final', title:'Final',       date:'24 Oct', home:null, away:null, placeholder:'🏆 Final — 1st vs Eliminator Winner' }
+];
+const STORAGE_KEY = 'scl1_league_season1_official_v2';
+const RUN_COUNT = 4;
+// Official Season I records are embedded in this HTML file so they are present
+// even when it is opened in a different browser or on a different device.
+const DEFAULT_RESULTS = {
+  g1: { home:'DPD', away:'UTV', savedAt:Date.UTC(2026,9,10,12), runs:[
+    {homeSurfer:'Noon',awaySurfer:'Yutani',homeScore:291945,awayScore:1077895},
+    {homeSurfer:'Jake',awaySurfer:'Lucy',homeScore:75909,awayScore:108758},
+    {homeSurfer:'Miss Maia',awaySurfer:'Billy',homeScore:812439,awayScore:81131},
+    {homeSurfer:'Tagbot',awaySurfer:'Ella',homeScore:431770,awayScore:228132}
+  ]},
+  g2: { home:'NDS', away:'DPD', savedAt:Date.UTC(2026,9,12,12), runs:[
+    {homeSurfer:'Fresh',awaySurfer:'Miss Maia',homeScore:1636245,awayScore:678683},
+    {homeSurfer:'Spike',awaySurfer:'Tagbot',homeScore:146326,awayScore:67212},
+    {homeSurfer:'Tricky',awaySurfer:'Jake',homeScore:281796,awayScore:576437},
+    {homeSurfer:'Ninja One',awaySurfer:'Noon',homeScore:41343,awayScore:228051}
+  ]},
+  g3: { home:'UTV', away:'NDS', savedAt:Date.UTC(2026,9,14,12), runs:[
+    {homeSurfer:'Yutani',awaySurfer:'Fresh',homeScore:69066,awayScore:494002},
+    {homeSurfer:'Lucy',awaySurfer:'Spike',homeScore:92705,awayScore:244055},
+    {homeSurfer:'Ella',awaySurfer:'Tricky',homeScore:207889,awayScore:123749},
+    {homeSurfer:'Billy',awaySurfer:'Ninja One',homeScore:89790,awayScore:133251}
+  ]},
+  g4: { home:'UTV', away:'DPD', savedAt:Date.UTC(2026,9,16,12), runs:[
+    {homeSurfer:'Yutani',awaySurfer:'Miss Maia',homeScore:911786,awayScore:442917},
+    {homeSurfer:'Lucy',awaySurfer:'Tagbot',homeScore:52202,awayScore:80237},
+    {homeSurfer:'Ella',awaySurfer:'Noon',homeScore:34303,awayScore:82595},
+    {homeSurfer:'Billy',awaySurfer:'Jake',homeScore:116711,awayScore:76084}
+  ]},
+  g5: { home:'DPD', away:'NDS', savedAt:Date.UTC(2026,9,18,12), runs:[
+    {homeSurfer:'Noon',awaySurfer:'Fresh',homeScore:509584,awayScore:274605},
+    {homeSurfer:'Miss Maia',awaySurfer:'Spike',homeScore:144745,awayScore:459311},
+    {homeSurfer:'Jake',awaySurfer:'Tricky',homeScore:190515,awayScore:619237},
+    {homeSurfer:'Jay',awaySurfer:'Ninja One',homeScore:208154,awayScore:780823}
+  ]},
+  g6: { home:'NDS', away:'UTV', savedAt:Date.UTC(2026,9,20,12), runs:[
+    {homeSurfer:'Fresh',awaySurfer:'Yutani',homeScore:563428,awayScore:148370},
+    {homeSurfer:'Spike',awaySurfer:'Lucy',homeScore:353706,awayScore:506304},
+    {homeSurfer:'Tricky',awaySurfer:'Ella',homeScore:131842,awayScore:192418},
+    {homeSurfer:'Ninja One',awaySurfer:'Billy',homeScore:124182,awayScore:254878}
+  ]},
+  p1: { home:'UTV', away:'DPD', savedAt:Date.UTC(2026,9,22,12), runs:[
+    {homeSurfer:'Yutani',awaySurfer:'Noon',homeScore:740115,awayScore:416165},
+    {homeSurfer:'Lucy',awaySurfer:'Miss Maia',homeScore:174664,awayScore:1656088},
+    {homeSurfer:'Ella',awaySurfer:'Jake',homeScore:205803,awayScore:570156},
+    {homeSurfer:'Billy',awaySurfer:'Tagbot',homeScore:317742,awayScore:735556}
+  ]},
+  f1: { home:'NDS', away:'DPD', savedAt:Date.UTC(2026,9,24,12), runs:[
+    {homeSurfer:'Fresh',awaySurfer:'Noon',homeScore:505194,awayScore:818256},
+    {homeSurfer:'Spike',awaySurfer:'Miss Maia',homeScore:319144,awayScore:511000},
+    {homeSurfer:'Tricky',awaySurfer:'Jake',homeScore:1132192,awayScore:148388},
+    {homeSurfer:'Ninja One',awaySurfer:'Tagbot',homeScore:194044,awayScore:586345}
+  ]}
+};
+function cloneDefaultResults(){ return JSON.parse(JSON.stringify(DEFAULT_RESULTS)); }
+let state = { results: cloneDefaultResults() };
+function persist(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
+function loadState(){
+  state.results = cloneDefaultResults();
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    if(data && typeof data==='object' && data.results && typeof data.results==='object') {
+      state.results = Object.assign(state.results, data.results);
+    }
+  }catch(e){ state.results = cloneDefaultResults(); }
+}
+function getFixture(id){ return FIXTURES.find(f=>f.id===id)||null; }
+function groupFixtures(){ return FIXTURES.filter(f=>f.stage==='Group Stage'); }
+function summarize(res){
+  let homeRuns=0, awayRuns=0;
+  (res.runs||[]).forEach(r=>{
+    const hs=Number(r.homeScore), as=Number(r.awayScore);
+    if(!isFinite(hs)||!isFinite(as)) return;
+    if(hs>as) homeRuns++; else if(as>hs) awayRuns++;
+  });
+  return { homeRuns, awayRuns };
+}
+function computeStandings(fixtureList){
+  const stats={};
+  Object.keys(TEAMS).forEach(id=>{ stats[id]={ team:id, P:0, W:0, D:0, L:0, MP:0, RP:0, RL:0, RD:0 }; });
+  fixtureList.forEach(fx=>{
+    const res=state.results[fx.id]; if(!res) return;
+    const h=res.home, a=res.away; if(!h||!a||!stats[h]||!stats[a]) return;
+    const s=summarize(res); const sh=stats[h], sa=stats[a];
+    sh.P++; sa.P++; sh.RP+=s.homeRuns; sh.RL+=s.awayRuns; sa.RP+=s.awayRuns; sa.RL+=s.homeRuns;
+    if(s.homeRuns>s.awayRuns){ sh.W++; sa.L++; sh.MP+=2; }
+    else if(s.awayRuns>s.homeRuns){ sa.W++; sh.L++; sa.MP+=2; }
+    else { sh.D++; sa.D++; sh.MP+=1; sa.MP+=1; }
+  });
+  Object.values(stats).forEach(s=>{ s.RD=s.RP-s.RL; });
+  return stats;
+}
+function sortedStandings(fixtureList){
+  const rows=Object.values(computeStandings(fixtureList));
+  rows.sort((a,b)=>(b.MP-a.MP)||(b.RP-a.RP)||(b.RD-a.RD));
+  return rows;
+}
+function allGroupDone(){ return groupFixtures().every(f=>!!state.results[f.id]); }
+function resolveFixture(fx){
+  if(fx.home&&fx.away) return { home:fx.home, away:fx.away };
+  if(!allGroupDone()) return { home:null, away:null };
+  const rows=sortedStandings(groupFixtures());
+  if(rows.length<3) return { home:null, away:null };
+  if(fx.id==='p1') return { home:rows[1].team, away:rows[2].team };
+  if(fx.id==='f1'){
+    let away=null; const p=state.results['p1'];
+    if(p){ away=winnerOf(p); }
+    return { home:rows[0].team, away };
+  }
+  return { home:null, away:null };
+}
+function teamTag(id){ const t=TEAMS[id]; return t?`${t.emoji} ${t.short}`:'TBD'; }
+function surferByName(teamId,name){ const t=TEAMS[teamId]; if(!t) return null; return t.surfers.find(s=>s.name===name)||null; }
+function surferLabel(teamId,name){ const s=surferByName(teamId,name); return s?`${s.emoji} ${s.name}`:(name||'—'); }
+function runDetailsHTML(res){
+  let h='';
+  (res.runs||[]).forEach((r,i)=>{
+    const hs=Number(r.homeScore), as=Number(r.awayScore);
+    const win=hs>as?res.home:(as>hs?res.away:null);
+    const ht=TEAMS[res.home], at=TEAMS[res.away]; const der=isOrig(r.homeSurfer,r.awaySurfer);
+    h+=`<div class="run-detail"><div class="rd-head"><span>Run ${i+1}</span><span class="win-tag">🏆 ${win?TEAMS[win].short:'—'}</span></div>
+      <div class="rd-row ${win===res.home?'won':''}"><span class="rd-team t-${res.home}">${ht.emoji} ${ht.short}</span><span class="rd-surfer">${surferLabel(res.home,r.homeSurfer)}</span><span class="rd-score">${hs}</span></div>
+      <div class="rd-row ${win===res.away?'won':''}"><span class="rd-team t-${res.away}">${at.emoji} ${at.short}</span><span class="rd-surfer">${surferLabel(res.away,r.awaySurfer)}</span><span class="rd-score">${as}</span></div></div>`;
+  });
+  if(res.superRun){ const sr=res.superRun, a=Number(sr.homeScore), b=Number(sr.awayScore), win=a>b?res.home:res.away, der=isOrig(sr.homeSurfer,sr.awaySurfer);
+    const row=(tm,sf,sc,w)=>`<div class="rd-row ${w?'won':''}"><span class="rd-team t-${tm}">${TEAMS[tm].emoji} ${TEAMS[tm].short}</span><span class="rd-surfer">${surferLabel(tm,sf)}</span><span class="rd-score">${sc}</span></div>`;
+    h+=`<div class="run-detail super"><div class="rd-head"><span>⚡ Super Run</span><span class="win-tag">🏆 ${TEAMS[win].short}</span></div>${row(res.home,sr.homeSurfer,a,win===res.home)}${row(res.away,sr.awaySurfer,b,win===res.away)}</div>`; }
+  return h;
+}
+const ORIG=['Jake','Tricky'];
+const isOrig=(a,b)=>a!==b&&ORIG.includes(a)&&ORIG.includes(b);
+function originalsList(){
+  const out=[];
+  FIXTURES.forEach(fx=>{ const res=state.results[fx.id]; if(!res) return; const lbl=fx.date+' · '+(fx.title||fx.stage);
+    const add=(hs,as,hsc,asc,tag)=>{ if(!isOrig(hs,as)) return; const jh=hs==='Jake', j=jh?hsc:asc, tr=jh?asc:hsc; out.push({lbl,tag,j,t:tr,w:j>tr?'Jake':'Tricky'}); };
+    (res.runs||[]).forEach((r,i)=>add(r.homeSurfer,r.awaySurfer,Number(r.homeScore),Number(r.awayScore),'Run '+(i+1)));
+    if(res.superRun) add(res.superRun.homeSurfer,res.superRun.awaySurfer,Number(res.superRun.homeScore),Number(res.superRun.awayScore),'⚡ Super Run');
+  });
+  return out;
+}
+function renderRivalry(){
+  const L=originalsList(), c={Jake:0,Tricky:0}; L.forEach(x=>{ c[x.w]++; });
+  const E={Jake:'🔵',Tricky:'🩷'}, TM={Jake:'DPD',Tricky:'NDS'}, last=L[L.length-1];
+  const pl=n=>`<div class="orig-p"><div class="orig-e">${E[n]}</div><div class="orig-n">${n}</div><div class="orig-t t-${TM[n]}">${TEAMS[TM[n]].emoji} ${TM[n]}</div><div class="orig-c">${c[n]}</div><div class="orig-w">meetings won</div></div>`;
+  const holder=last
+    ?`<div class="holder"><div class="holder-k">👑 The OG Crown</div><div class="holder-e">${E[last.w]}</div><div class="holder-n">${last.w}</div><div class="holder-t">${TEAMS[TM[last.w]].emoji} ${TM[last.w]} · won it on ${last.lbl}</div></div>`
+    :`<div class="holder"><div class="holder-k">👑 The OG Crown</div><div class="holder-n">Unclaimed</div><div class="holder-t">Up for grabs when Jake and Tricky first meet</div></div>`;
+  let h=`<div class="orig"><div class="orig-k">The Originals Rivalry</div><div class="orig-sub">Jake vs Tricky</div>${holder}<div class="orig-board">${pl('Jake')}<div class="orig-vs">vs</div>${pl('Tricky')}</div></div><p class="note">Every time Jake and Tricky meet, the winner takes The OG Crown and keeps it until they meet again.</p>`;
+  if(L.length) h+=`<div class="card rec"><h3>Meetings</h3><div class="rec-sub">Jake vs Tricky results, oldest first</div>${L.map((x,i)=>`<div class="orow"><div class="rs" style="margin:0;display:flex;justify-content:space-between;gap:8px"><span>${x.lbl} · ${x.tag}</span>${i===L.length-1?'<span class="bdg done">Latest</span>':''}</div><div class="ocmp"><div class="${x.w==='Jake'?'ow':''}">🔵 Jake<b>${f(x.j)}</b></div><span class="ovs">vs</span><div class="${x.w==='Tricky'?'ow':''}">🩷 Tricky<b>${f(x.t)}</b></div></div><div class="owin">Winner: ${E[x.w]} ${x.w}</div></div>`).join('')}</div>`;
+  document.getElementById('pane-rivalry').innerHTML=h;
+}
+const f=n=>Number(n).toLocaleString('en-US');
+const fk=n=>n>=1e6?(n/1e6).toFixed(2)+'M':Math.round(n/1e3)+'K';
+const ord=n=>n+((n%100>10&&n%100<14)||n%10>3?'th':['th','st','nd','rd'][n%10]);
+function allRuns(){
+  const out=[];
+  FIXTURES.forEach(fx=>{ const res=state.results[fx.id]; if(!res) return;
+    const lbl=fx.date+' · '+(fx.title||fx.stage);
+    (res.runs||[]).forEach(r=>{ const hs=Number(r.homeScore), as=Number(r.awayScore); if(!isFinite(hs)||!isFinite(as)) return;
+      [[res.home,r.homeSurfer,hs,res.away,r.awaySurfer,as],[res.away,r.awaySurfer,as,res.home,r.homeSurfer,hs]].forEach(a=>out.push({t:a[0],s:a[1],sc:a[2],ot:a[3],os:a[4],osc:a[5],lbl,win:a[2]>a[5],m:a[2]-a[5]}));
+    });
+  });
+  return out;
+}
+function surferStats(runs){
+  const m={};
+  runs.forEach(r=>{ const o=m[r.s]||(m[r.s]={name:r.s,team:r.t,n:0,w:0,sum:0,best:0,k5:0});
+    o.n++; if(r.win) o.w++; o.sum+=r.sc; o.best=Math.max(o.best,r.sc); if(r.sc>=5e5) o.k5++; });
+  return Object.values(m).map(o=>{ o.avg=Math.round(o.sum/o.n); return o; });
+}
+function topN(list,val,tb){
+  const s=list.slice().sort((a,b)=>val(b)-val(a)||(tb?tb(b)-tb(a):0));
+  return s.map(x=>({x,rank:1+s.filter(y=>val(y)>val(x)).length})).filter(o=>o.rank<=5);
+}
+function rrow(rank,team,name,sub,val,valSub,pct){
+  const t=TEAMS[team];
+  return `<div class="rr"><div class="rk r${rank}">${rank}</div><div class="rm"><div class="rn">${name}<span class="rt t-${team}">${t.emoji} ${t.short}</span></div><div class="rs">${sub}</div></div><div class="rv">${val}${valSub?`<small>${valSub}</small>`:''}</div>${pct!=null?`<div class="bar"><i style="width:${pct}%;--c:var(--${team.toLowerCase()})"></i></div>`:''}</div>`;
+}
+function rcard(title,sub,rows){ return `<div class="card rec"><h3>${title}</h3><div class="rec-sub">${sub}</div>${rows}</div>`; }
+function teamOf(name){ return Object.keys(TEAMS).find(id=>TEAMS[id].surfers.some(s=>s.name===name)); }
+function winnerOf(res){ const s=summarize(res); if(s.homeRuns!==s.awayRuns) return s.homeRuns>s.awayRuns?res.home:res.away; const sr=res.superRun; if(sr){ const a=Number(sr.homeScore), b=Number(sr.awayScore); if(a>b) return res.home; if(b>a) return res.away; } return null; }
+function loserOf(res){ const w=winnerOf(res); return w?(w===res.home?res.away:res.home):null; }
+function renderRecords(){
+  const runs=allRuns(), st=surferStats(runs), by={}; st.forEach(o=>{by[o.name]=o;});
+  const pane=(id,h)=>{ document.getElementById('pane-'+id).innerHTML=h; };
+  if(!runs.length){ ['awards','scores','perf','teams'].forEach(i=>pane(i,'<div class="empty">Records appear once results are entered.</div>')); return; }
+  const wins=runs.filter(r=>r.win), loss=runs.filter(r=>!r.win), mx=a=>Math.max(1,...a);
+  const vs=r=>`vs ${surferLabel(r.ot,r.os)} · ${r.lbl}`, nm=r=>surferLabel(r.t,r.s);
+  // Awards
+  const P='Miss Maia', ps=by[P]; let aw='';
+  const cell=(l,v)=>`<div class="chip-stat"><div class="chip-stat-lbl">${l}</div><div class="chip-stat-val">${v}</div></div>`;
+  if(ps){ const t=TEAMS[ps.team];
+    aw+=`<div class="potm"><div class="potm-kicker">🏅 Player of the Tournament</div><div class="potm-emoji">${surferByName(ps.team,P).emoji}</div><div class="potm-name">${P}</div><div class="potm-sub t-${ps.team}">${t.emoji} ${t.name}</div><div class="chip-stats">${cell('Run wins',ps.w+'/'+ps.n)}${cell('Average score',f(ps.avg))}${cell('Best score',f(ps.best))}${cell('500K+ scores',ps.k5)}</div></div>`; }
+  const tile=(n,cap,res)=>{ const id=teamOf(n), s=by[n]||{w:0,avg:0}, t=TEAMS[id];
+    return `<div class="xi-p ${id}${res?' res':''}">${cap?'<span class="cap" title="Captain">C</span>':''}<div class="xi-e">${surferByName(id,n).emoji}</div><div><div class="xi-n">${n}${res?' · Reserve':''}</div><div class="xi-t t-${id}">${t.emoji} ${t.short}</div><div class="xi-s">${s.w} run wins · avg ${fk(s.avg)}</div></div></div>`; };
+  aw+=`<h2 class="sec-title">⭐ Team of the Tournament</h2><div class="xi">${tile('Miss Maia',1)}${tile('Noon')}${tile('Fresh')}${tile('Tagbot')}${tile('Yutani',0,1)}</div>`;
+  pane('awards',aw);
+  // Scores
+  const mxs=mx(runs.map(r=>r.sc)), mm=mx(wins.map(r=>r.m));
+  let sc=rcard('🏆 Highest Scores','Best single runs of the season',topN(runs,r=>r.sc).map(o=>rrow(o.rank,o.x.t,nm(o.x),vs(o.x),f(o.x.sc),'',o.x.sc/mxs*100)).join(''));
+  sc+=rcard('📉 Lowest Scores','Lowest single runs of the season',topN(runs,r=>-r.sc).map(o=>rrow(o.rank,o.x.t,nm(o.x),vs(o.x),f(o.x.sc))).join(''));
+  sc+=rcard('🔥 Biggest Winning Margins','Gap between winning and losing score in a run',topN(wins,r=>r.m).map(o=>rrow(o.rank,o.x.t,nm(o.x),vs(o.x),'+'+f(o.x.m),f(o.x.sc)+' – '+f(o.x.osc),o.x.m/mm*100)).join(''));
+  sc+=rcard('💔 Highest Scores in Losing Runs','Big scores that still lost the run',topN(loss,r=>r.sc).map(o=>rrow(o.rank,o.x.t,nm(o.x),`lost to ${surferLabel(o.x.ot,o.x.os)} (${f(o.x.osc)}) · ${o.x.lbl}`,f(o.x.sc))).join(''));
+  pane('scores',sc+`<p class="note">Based on ${runs.length/2} runs across ${FIXTURES.filter(x=>state.results[x.id]).length} matches. Records update when a result is edited.</p>`);
+  // Performance
+  const mw=mx(st.map(o=>o.w)), q=st.filter(o=>o.n>=3), mxa=mx(q.map(o=>o.avg));
+  let pf=rcard('🏅 Most Run Wins','Runs won across all matches · ties share a rank',topN(st,o=>o.w,o=>o.avg).map(o=>rrow(o.rank,o.x.team,surferLabel(o.x.team,o.x.name),'Avg '+f(o.x.avg),o.x.w,'of '+o.x.n+' runs',o.x.w/mw*100)).join(''));
+  pf+=rcard('📊 Highest Average Score','Minimum 3 runs',topN(q,o=>o.avg).map(o=>rrow(o.rank,o.x.team,surferLabel(o.x.team,o.x.name),`${o.x.n} runs · best ${f(o.x.best)}`,f(o.x.avg),'',o.x.avg/mxa*100)).join(''));
+  pf+=rcard('💯 Most 500K+ Scores','Runs of 500,000 or more · ties share a rank',topN(st.filter(o=>o.k5),o=>o.k5,o=>o.avg).map(o=>rrow(o.rank,o.x.team,surferLabel(o.x.team,o.x.name),'Best '+f(o.x.best),o.x.k5,'of '+o.x.n+' runs')).join(''));
+  const club=runs.filter(r=>r.sc>=1e6).sort((a,b)=>b.sc-a.sc);
+  pf+=`<div class="card rec"><h3>🚀 1M Club</h3><div class="rec-sub">Runs of 1,000,000 or more</div><div class="club">${club.map(r=>`<div class="club-i"><div class="rn" style="justify-content:center">${nm(r)}</div><div class="rv" style="text-align:center;margin-top:4px">${f(r.sc)}</div><div class="rs">${r.lbl}</div></div>`).join('')||'<div class="empty" style="grid-column:1/-1">No 1M+ runs yet.</div>'}</div></div>`;
+  pane('perf',pf);
+  // Teams
+  const gs=sortedStandings(groupFixtures()), f1=state.results.f1, p1=state.results.p1;
+  const info=Object.keys(TEAMS).map(id=>{
+    let W=0,D=0,L=0;
+    FIXTURES.forEach(fx=>{ const r=state.results[fx.id]; if(!r||(r.home!==id&&r.away!==id)) return; const s=summarize(r), a=r.home===id?s.homeRuns:s.awayRuns, b=r.home===id?s.awayRuns:s.homeRuns; if(a>b) W++; else if(a<b) L++; else { const w=winnerOf(r); if(w===id) W++; else if(w) L++; else D++; } });
+    const m=runs.filter(r=>r.t===id), rw=m.filter(r=>r.win).length;
+    const fin=(f1&&winnerOf(f1)===id)?'🏆 Champions':((f1&&loserOf(f1)===id)?'🥈 Runners-up':((p1&&loserOf(p1)===id)?'🥉 Third place':''));
+    return {id,W,D,L,rw,rl:m.length-rw,avg:m.length?Math.round(m.reduce((a,r)=>a+r.sc,0)/m.length):0,best:Math.max(0,...m.map(r=>r.sc)),k5:m.filter(r=>r.sc>=5e5).length,m1:m.filter(r=>r.sc>=1e6).length,fin,g:gs.findIndex(r=>r.team===id)+1};
+  });
+  const pri=x=>x.fin.includes('Champ')?0:(x.fin.includes('Runners')?1:(x.fin.includes('Third')?2:3));
+  info.sort((a,b)=>pri(a)-pri(b)||a.g-b.g);
+  pane('teams',info.map(o=>{ const t=TEAMS[o.id];
+    return `<div class="team-card ${o.id}"><div class="team-head"><span class="team-emoji">${t.emoji}</span><span class="team-name">${t.name}</span></div><div class="fin">${o.fin||'&nbsp;'}</div><div class="tp">${cell('Group finish',ord(o.g))}${cell('Matches W–D–L',o.W+'–'+o.D+'–'+o.L)}${cell('Runs W–L',o.rw+'–'+o.rl)}${cell('Average score',fk(o.avg))}${cell('Best score',fk(o.best))}${cell('500K+ · 1M+',o.k5+' · '+o.m1)}</div></div>`; }).join(''));
+}
+document.addEventListener('click',e=>{ const p=e.target.closest('.pill'); if(!p) return;
+  document.querySelectorAll('.pill').forEach(x=>x.classList.toggle('active',x===p));
+  document.querySelectorAll('.rec-pane').forEach(x=>x.classList.toggle('active',x.id==='pane-'+p.dataset.pane)); });
+function itemChipHTML(item){
+  const perks=(item.perks||[]).map(p=>`<div class="perk"><div class="perk-head"><span class="perk-icon">${p.icon}</span><span class="perk-name">${p.title}</span></div><div class="perk-desc">${p.desc}</div>${p.statLabel?`<div class="perk-stat"><span class="perk-stat-label">${p.statLabel}</span><span class="perk-stat-value">${p.statValue}</span></div>`:''}</div>`).join('');
+  return `<div class="chip-item" data-chip-toggle><button class="chip-head" type="button"><span class="chip-emoji">${item.emoji}</span><span class="chip-name">${item.name}</span><span class="chip-lvl">Lv.${item.lvl}</span></button>
+    <div class="chip-body"><div class="chip-stats"><div class="chip-stat"><div class="chip-stat-lbl">Level</div><div class="chip-stat-val">${item.lvl}</div></div><div class="chip-stat"><div class="chip-stat-lbl">Score Multiplier</div><div class="chip-stat-val">×${item.multiplier}</div></div></div><div class="perks-title">Perks</div>${perks}</div></div>`;
+}
+function renderTeams(){
+  let html='';
+  Object.values(TEAMS).forEach(t=>{
+    html+=`<div class="team-card ${t.id}"><div class="team-head"><span class="team-emoji">${t.emoji}</span><span class="team-name">${t.name}</span></div><div class="team-code">${t.short}</div>
+      <div class="sub-head">Surfers</div><div class="chip-list">${t.surfers.slice().sort(byLvl).map(s=>itemChipHTML(s)).join('')}</div>
+      <div class="sub-head">Hoverboards</div><div class="chip-list">${t.boards.map(b=>itemChipHTML(b)).join('')}</div></div>`;
+  });
+  document.getElementById('teamsList').innerHTML=html;
+}
+let entry=null;
+const entryOverlay=document.getElementById('entryOverlay');
+const entryRunsEl=document.getElementById('entryRuns');
+const entryMsgEl=document.getElementById('entryMsg');
+function openEntry(fixtureId){
+  const fx=getFixture(fixtureId); if(!fx) return;
+  const p=resolveFixture(fx); if(!p.home||!p.away) return;
+  const existing=state.results[fixtureId]; const runs=[];
+  for(let i=0;i<RUN_COUNT;i++){
+    const src=existing&&existing.runs&&existing.runs[i]?existing.runs[i]:null;
+    runs.push({
+      homeSurfer:src&&src.homeSurfer?src.homeSurfer:'',
+      awaySurfer:src&&src.awaySurfer?src.awaySurfer:'',
+      homeScore:src&&src.homeScore!==undefined&&src.homeScore!==null&&src.homeScore!==''?String(src.homeScore):'',
+      awayScore:src&&src.awayScore!==undefined&&src.awayScore!==null&&src.awayScore!==''?String(src.awayScore):''
+    });
+  }
+  const xs=existing&&existing.superRun?existing.superRun:null; entry={ fixtureId, home:p.home, away:p.away, runs, isEdit:!!existing, sr:{ homeSurfer:xs?xs.homeSurfer:'', awaySurfer:xs?xs.awaySurfer:'', homeScore:xs?String(xs.homeScore):'', awayScore:xs?String(xs.awayScore):'' } };
+  hideMsg(); renderEntry(); entryOverlay.classList.add('open'); document.body.style.overflow='hidden'; entryOverlay.scrollTop=0;
+}
+function closeEntry(){ entryOverlay.classList.remove('open'); document.body.style.overflow=''; entry=null; }
+function sideHTML(side,i,team){
+  const r=entry.runs[i]; const sel=side==='home'?r.homeSurfer:r.awaySurfer; const score=side==='home'?r.homeScore:r.awayScore;
+  let opts='<option value="">[ Select Surfer ]</option>';
+  team.surfers.forEach(s=>{ opts+=`<option value="${s.name}" ${sel===s.name?'selected':''}>${s.emoji} ${s.name} — Lv.${s.lvl}</option>`; });
+  return `<div class="run-side ${side}"><div class="side-label t-${team.id}">${team.emoji} ${team.short}</div><div class="fields"><select class="surfer-select" data-run="${i}" data-side="${side}">${opts}</select><input class="score-input" type="number" inputmode="numeric" min="0" step="1" placeholder="Score" data-run="${i}" data-side="${side}" value="${score}"></div></div>`;
+}
+function renderEntry(){
+  const fx=getFixture(entry.fixtureId); const ht=TEAMS[entry.home], at=TEAMS[entry.away];
+  const label=fx.title?`${fx.date} · ${fx.title}`:`${fx.date} · ${fx.stage}`;
+  document.getElementById('entryDate').textContent=label;
+  document.getElementById('entryTitle').innerHTML=`<span class="t-${ht.id}">${ht.emoji} ${ht.short}</span><span class="vs">vs</span><span class="t-${at.id}">${at.emoji} ${at.short}</span>`;
+  document.getElementById('entrySave').textContent=entry.isEdit?'💾 Save Changes':'💾 Save Result';
+  let html='';
+  for(let i=0;i<RUN_COUNT;i++) html+=`<div class="run-card"><div class="run-head"><span class="run-title">Run ${i+1}</span><span class="run-winner" id="rw-${i}"></span></div>${sideHTML('home',i,ht)}${sideHTML('away',i,at)}</div>`;
+  entryRunsEl.innerHTML=html+superHTML(); refreshSelects(); refreshRunWinners();
+}
+function refreshSelects(){
+  ['home','away'].forEach(side=>{
+    const selects=Array.from(entryRunsEl.querySelectorAll(`select[data-run][data-side="${side}"]`));
+    const chosen=selects.map(s=>s.value).filter(Boolean);
+    selects.forEach(sel=>{ Array.from(sel.options).forEach(opt=>{ if(!opt.value) return; opt.disabled=chosen.indexOf(opt.value)!==-1 && sel.value!==opt.value; }); });
+  });
+}
+function refreshRunWinners(){
+  for(let i=0;i<RUN_COUNT;i++){
+    const el=document.getElementById('rw-'+i); if(!el) continue;
+    const r=entry.runs[i]; const hs=r.homeScore===''?null:Number(r.homeScore); const as=r.awayScore===''?null:Number(r.awayScore);
+    if(hs===null||as===null||!isFinite(hs)||!isFinite(as)){ el.textContent=''; el.className='run-winner'; continue; }
+    if(hs===as){ el.textContent='⚠️ Tied — change a score'; el.className='run-winner tie'; }
+    else if(hs>as){ el.textContent=`🏆 ${TEAMS[entry.home].short}`; el.className='run-winner t-'+entry.home; }
+    else { el.textContent=`🏆 ${TEAMS[entry.away].short}`; el.className='run-winner t-'+entry.away; }
+  }
+}
+function onSurferChange(i,side,val){
+  const key=side==='home'?'homeSurfer':'awaySurfer';
+  if(val) entry.runs.forEach((r,j)=>{ if(j!==i && r[key]===val) r[key]=''; });
+  entry.runs[i][key]=val;
+  entryRunsEl.querySelectorAll(`select[data-run][data-side="${side}"]`).forEach(sel=>{ const idx=Number(sel.dataset.run); sel.value=entry.runs[idx][key]||''; });
+  refreshSelects();
+}
+entryRunsEl.addEventListener('input', e=>{
+  const t=e.target; if(!entry) return; const i=Number(t.dataset.run); const side=t.dataset.side; if(isNaN(i)||!side) return;
+  if(t.classList.contains('surfer-select')){ onSurferChange(i,side,t.value); return; }
+  if(t.classList.contains('score-input')){ const key=side==='home'?'homeScore':'awayScore'; entry.runs[i][key]=t.value; refreshRunWinners(); }
+});
+entryRunsEl.addEventListener('change', e=>{
+  const t=e.target; if(!entry) return;
+  if(t.dataset.run!==undefined&&t.classList.contains('surfer-select')) onSurferChange(Number(t.dataset.run), t.dataset.side, t.value);
+});
+function showMsg(text,type){ entryMsgEl.textContent=text; entryMsgEl.className='entry-msg show '+(type||'error'); entryMsgEl.scrollIntoView({behavior:'smooth',block:'center'}); }
+function hideMsg(){ entryMsgEl.textContent=''; entryMsgEl.className='entry-msg'; }
+function saveEntry(){
+  if(!entry) return; const runs=entry.runs;
+  for(let i=0;i<RUN_COUNT;i++){ if(!runs[i].homeSurfer||!runs[i].awaySurfer){ showMsg(`Please select a surfer for both teams in Run ${i+1}.`); return; } }
+  const homePicked=runs.map(r=>r.homeSurfer), awayPicked=runs.map(r=>r.awaySurfer);
+  if(new Set(homePicked).size!==RUN_COUNT){ showMsg(`A surfer cannot be selected more than once for ${TEAMS[entry.home].short}.`); return; }
+  if(new Set(awayPicked).size!==RUN_COUNT){ showMsg(`A surfer cannot be selected more than once for ${TEAMS[entry.away].short}.`); return; }
+  const clean=[];
+  for(let i=0;i<RUN_COUNT;i++){
+    const r=runs[i];
+    if(r.homeScore===''||r.awayScore===''){ showMsg(`Please enter both scores for Run ${i+1}.`); return; }
+    const a=Number(r.homeScore), b=Number(r.awayScore);
+    if(!Number.isInteger(a)||a<0||!Number.isInteger(b)||b<0){ showMsg(`Scores must be non-negative whole numbers (Run ${i+1}).`); return; }
+    if(a===b){ showMsg(`Run ${i+1} is tied (${a}–${b}). Please enter different scores — every run must have a winner.`); return; }
+    clean.push({ homeSurfer:r.homeSurfer, awaySurfer:r.awaySurfer, homeScore:a, awayScore:b });
+  }
+  let superRun=null;
+  if(needsSuper()){ const sr=entry.sr;
+    if(!sr.homeSurfer||!sr.awaySurfer){ showMsg('The match is tied 2–2. Select a surfer for both teams in the Super Run.'); return; }
+    if(sr.homeScore===''||sr.awayScore===''){ showMsg('Please enter both Super Run scores.'); return; }
+    const a=Number(sr.homeScore), b=Number(sr.awayScore);
+    if(!Number.isInteger(a)||a<0||!Number.isInteger(b)||b<0){ showMsg('Super Run scores must be non-negative whole numbers.'); return; }
+    if(a===b){ showMsg(`The Super Run is tied (${a}–${b}). It must have a winner.`); return; }
+    superRun={ homeSurfer:sr.homeSurfer, awaySurfer:sr.awaySurfer, homeScore:a, awayScore:b }; }
+  const prev=state.results[entry.fixtureId]; const now=Date.now();
+  state.results[entry.fixtureId]={ home:entry.home, away:entry.away, runs:clean, ...(superRun?{superRun}:{}), savedAt:prev?(prev.savedAt||now):now, updatedAt:now };
+  persist(); const wasEdit=entry.isEdit; closeEntry(); renderAll(); navigate('matches');
+  const wrap=document.getElementById('matchesList');
+  if(wrap&&wrap.parentNode){
+    const banner=document.createElement('div'); banner.className='entry-msg show info'; banner.style.marginBottom='14px';
+    banner.textContent=wasEdit?'✅ Result updated successfully.':'✅ Result saved successfully.';
+    wrap.parentNode.insertBefore(banner, wrap); setTimeout(()=>banner.remove(),2600);
+  }
+}
+
+function superHTML(){
+  const sr=entry.sr, ht=TEAMS[entry.home], at=TEAMS[entry.away];
+  const side=(tm,k)=>{ let o='<option value="">[ Select Surfer ]</option>'; tm.surfers.forEach(s=>{ o+=`<option value="${s.name}" ${sr[k+'Surfer']===s.name?'selected':''}>${s.emoji} ${s.name} — Lv.${s.lvl}</option>`; });
+    return `<div class="run-side ${k}"><div class="side-label t-${tm.id}">${tm.emoji} ${tm.short}</div><div class="fields"><select class="surfer-select" data-sr="1" data-side="${k}">${o}</select><input class="score-input" type="number" inputmode="numeric" min="0" step="1" placeholder="Score" data-sr="1" data-side="${k}" value="${sr[k+'Score']}"></div></div>`; };
+  return `<div class="run-card super" id="superCard" style="display:none"><div class="run-head"><span class="run-title">⚡ Super Run</span><span class="run-winner" id="rw-s"></span></div><div class="sr-note">Playoff tied 2–2. The Super Run decides who wins the match.</div>${side(ht,'home')}${side(at,'away')}</div>`;
+}
+function needsSuper(){
+  const fx=getFixture(entry.fixtureId); if(!fx||fx.stage!=='Playoffs') return false; let h=0,a=0;
+  for(const r of entry.runs){ if(r.homeScore===''||r.awayScore==='') return false; const x=Number(r.homeScore), y=Number(r.awayScore); if(x>y) h++; else if(y>x) a++; else return false; }
+  return h===2&&a===2;
+}
+function refreshSuper(){
+  const c=document.getElementById('superCard'); if(!c||!entry) return; c.style.display=needsSuper()?'':'none';
+  const el=document.getElementById('rw-s'), sr=entry.sr, a=sr.homeScore===''?null:Number(sr.homeScore), b=sr.awayScore===''?null:Number(sr.awayScore);
+  if(a===null||b===null){ el.textContent=''; el.className='run-winner'; }
+  else if(a===b){ el.textContent='⚠️ Tied — change a score'; el.className='run-winner tie'; }
+  else { const w=a>b?entry.home:entry.away; el.textContent='🏆 '+TEAMS[w].short+' win the match'; el.className='run-winner t-'+w; }
+}
+{ const _rw=refreshRunWinners; refreshRunWinners=function(){ _rw(); refreshSuper(); }; }
+entryRunsEl.addEventListener('input',e=>{ const x=e.target; if(!entry||!x.dataset.sr) return; const k=x.dataset.side;
+  if(x.classList.contains('surfer-select')) entry.sr[k+'Surfer']=x.value; else entry.sr[k+'Score']=x.value; refreshSuper(); });
+const bul=(id,s)=>`<span class="blt${s?' '+s:''}">${id&&TEAMS[id]?TEAMS[id].emoji:'❔'}</span>`;
+function standingsHTML(rows){
+  let h='<div class="table-wrap"><table class="standings"><thead><tr><th>#</th><th class="tl">Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>MP</th><th>RP</th><th>RD</th></tr></thead><tbody>';
+  rows.forEach((r,i)=>{ const tm=TEAMS[r.team]; h+=`<tr><td class="rank">${i+1}</td><td class="tl t-${r.team}">${tm.emoji} ${tm.short}</td><td>${r.P}</td><td>${r.W}</td><td>${r.D}</td><td>${r.L}</td><td class="mp">${r.MP}</td><td>${r.RP}</td><td>${r.RD>0?'+':''}${r.RD}</td></tr>`; });
+  return h+'</tbody></table></div>';
+}
+function matchCard(fx,pfx){
+  const res=state.results[fx.id], p=resolveFixture(fx), ok=!!(p.home&&p.away), s=res?summarize(res):null, w=res?winnerOf(res):null;
+  const side=id=>id?`<div class="tm">${bul(id,'lg')}<span class="t-${id}">${TEAMS[id].name}</span>${res&&w===id?'<span>🏆</span>':''}</div>`:`<div class="tm">${bul(null,'lg')}<span class="sd">To be decided</span></div>`;
+  const badge=res?'<span class="bdg done">Completed</span>':`<span class="bdg">${ok?'Upcoming':'Awaiting'}</span>`;
+  let foot='';
+  if(res) foot=`<div class="ra"><button class="btn small" data-toggle="${pfx}-${fx.id}">▾ Run details</button><button class="btn small ghost" data-edit="${fx.id}">✏️ Edit</button></div><div class="detail" data-detail="${pfx}-${fx.id}">${runDetailsHTML(res)}</div>`;
+  else if(ok) foot=`<div class="ra"><button class="btn primary" data-enter="${fx.id}">▶ Enter result</button></div>`;
+  else foot=`<div class="sd" style="margin-top:10px;text-align:center">${fx.placeholder||''}</div>`;
+  const t=res?{home:res.home,away:res.away}:p;
+  return `<div class="mc"><div class="mt"><span>${fx.date} · ${fx.title||fx.stage}</span>${badge}</div><div class="vsr">${side(t.home)}${res?`<div class="scw"><div class="sc">${s.homeRuns}–${s.awayRuns}</div>${res.superRun?'<div class="sr-tag">⚡ Super Run</div>':''}</div>`:'<div class="vsx">vs</div>'}${side(t.away)}</div>${foot}</div>`;
+}
+function renderHome(){
+  const done=FIXTURES.filter(x=>state.results[x.id]), f1=state.results.f1, ch=f1?winnerOf(f1):null;
+  let next=null, latest=null;
+  for(const fx of FIXTURES){ if(state.results[fx.id]) continue; const p=resolveFixture(fx); if(p.home&&p.away){ next=fx; break; } }
+  FIXTURES.forEach(fx=>{ const r=state.results[fx.id]; if(r&&(!latest||(r.savedAt||0)>(state.results[latest.id].savedAt||0))) latest=fx; });
+  let h=`<div class="hero"><h1>SCL-I</h1><p>Subway City League · Season I</p>${ch?`<div class="champ">${bul(ch,'lg')}<div><small>🏆 Season I champions</small><b>${TEAMS[ch].name}</b></div></div>`:''}</div>`;
+  h+=`<div class="kpis"><div class="kpi"><b>${done.length}</b><small>Matches played</small></div><div class="kpi"><b>${allRuns().length/2}</b><small>Runs played</small></div></div>`;
+  if(next) h+=`<div class="sub">Next match</div>${matchCard(next,'h')}`;
+  if(latest) h+=`<div class="sub">Latest result</div>${matchCard(latest,'h')}`;
+  h+=`<div class="sub">Group standings</div>${standingsHTML(sortedStandings(groupFixtures()))}`;
+  document.getElementById('homeBox').innerHTML=h;
+}
+function renderMatches(){
+  let h='<div class="route">', last='';
+  FIXTURES.forEach(fx=>{ if(fx.stage!==last){ h+=`<div class="stage">${fx.stage}</div>`; last=fx.stage; } h+=`<div class="stn${state.results[fx.id]?' done':''}"><i class="dot"></i>${matchCard(fx,'m')}</div>`; });
+  document.getElementById('matchesList').innerHTML=h+'</div>';
+}
+function renderTable(){ document.getElementById('tableBox').innerHTML=standingsHTML(sortedStandings(groupFixtures())); }
+function navigate(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='view-'+v));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.view===v));
+  window.scrollTo(0,0);
+}
+document.addEventListener('click',e=>{
+  const c=e.target.closest('[data-chip-toggle]'); if(c){ c.classList.toggle('expanded'); return; }
+  const tb=e.target.closest('.tab'); if(tb){ navigate(tb.dataset.view); return; }
+  const tg=e.target.closest('[data-toggle]');
+  if(tg){ const el=document.querySelector(`[data-detail="${tg.dataset.toggle}"]`); if(el){ const o=el.classList.toggle('open'); tg.textContent=o?'▴ Hide details':'▾ Run details'; } return; }
+  const ed=e.target.closest('[data-edit]'); if(ed){ openEntry(ed.dataset.edit); return; }
+  const en=e.target.closest('[data-enter]'); if(en){ openEntry(en.dataset.enter); }
+});
+document.getElementById('entryClose').addEventListener('click',closeEntry);
+document.getElementById('entryCancel').addEventListener('click',closeEntry);
+document.getElementById('entrySave').addEventListener('click',saveEntry);
+function renderAll(){ renderHome(); renderMatches(); renderTable(); renderRecords(); renderRivalry(); }
+const byLvl=(a,b)=>b.lvl-a.lvl||Number(b.multiplier)-Number(a.multiplier);
+const CAPTAINS={DPD:'Jake',NDS:'Tricky',UTV:'Yutani'};
+function boot(){ loadState(); document.getElementById('teamsList').innerHTML=Object.values(TEAMS).map(t=>`<div class="team-card ${t.id}"><div class="team-head"><span class="team-emoji">${t.emoji}</span><span class="team-name">${t.name}</span></div><div class="team-code">${t.short}</div><div class="cap-line"><span class="chip-cap">C</span>Captain: ${surferLabel(t.id,CAPTAINS[t.id])}</div><div class="sub-head">Squad</div><div class="chip-list">${t.surfers.slice().sort(byLvl).map(s=>itemChipHTML(s).replace('<span class="chip-lvl">',s.name===CAPTAINS[t.id]?'<span class="chip-cap">C</span><span class="chip-lvl">':'<span class="chip-lvl">')).join('')}</div><div class="sub-head">Hoverboards</div><div class="chip-list">${t.boards.slice().sort(byLvl).map(itemChipHTML).join('')}</div></div>`).join(''); renderAll(); navigate('home'); }
+boot();
+</script></body></html>
